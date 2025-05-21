@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "parcelhubproject2",
+  "private_key_id": "695e7a467bc233072c12e05bddc5c695721546f2",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCqvRV1viA84Av4\nYj9HiIhTSCn4OmHrL+bWhwt0qUJagROyH3+2sIWpD0U8mkinzaMFt+70tp3iAyFS\n8zKVFG1Nqvv81TvubBAO0jZyCXlO3XaLUgp1AWX0EVD5G6zCAgQl/rnejzpxLDYt\n0Eop4H4uITn+cDQ6yxF4KyonU+GkWNXfyCOrP8JaFeBGutj25dWT7ri5oPDCA6iY\nsWBAplh93xHykVucXbkwM0afAPB5F/ZMunhoyLQaTum76r2Enks/Yhdml/AwbvL0\nlMZyM853Nv9IcYUEP/BvmM5kgazNwK8xW4d81gq+BrgV47kS81LwYeCR79DEOlX9\nmSOw9yN9AgMBAAECggEABczvtjTT3o2UCoe386OxUfcBKgQ9wGI7uu0SmA+KCA4b\nj7EfQyMjH1e79++b6UuErtSNYzXzDjMiBjHp9YOgpQNalT/fTd3Q+9frbptgyiue\n8+PBJDF8d7rA3/2vNFYiMvJA+U0vZJnma08Ivfx4/PM3B6xjMd4lRUpeH8DrSQyH\nXXVBhxyk/rLtc8X9nUX19Pci+cN73OOJl4DfYAmMuCBip2ByOX08Mm8OWavF6TqV\n8HoIBeD5C2ex34Q2EK/GqNC+N2CdqYWdBrFsoGIuf+dC4PpjnIj2KGDdlbByeNxy\n5DabYbm3KjIGB8Ii3oECxIh1pzpPgVw99qkgibPVRwKBgQDXLNhCx0s3SaI1ss5w\njHw4VKwkoIaR4fbCS9O5SuYCRRa6soN7/h6JmCQb8rMsecsFbX0RGxACU+zXZ04w\nia56BrtUwEeebgHseyQiOySIQQmOEntL/uCe9ZDkCI2Coah2wjjAcoL4qwBAGDtb\nkpkh+Q7snmaBPFy7uAE9kagVJwKBgQDLIe9c2kb4fAX1lAuFwyrd7lygwda/pPZ7\nIqw5ruAoCaEZ0kups1mcDpK6I+zFjJwVmb0WXnOLJ/jy+Xsyj64RMkgDqAAPSTTp\nAS2SeRRYxVp7PnB+BFRCFoOjAjWRrNKDq0UWc85l2LWc3djQaAxRyZgIoD0NkiC2\ngqL4tgDQuwKBgQCUTTssI1GK5HwhCIDR/3FqHambgOvexd+doEdnkOCgNd/pgzmu\nDsIbUTmp7YdiIvszXXfyfzV0dUVqXK/+MhaH0fXw/qkd33IB/Ak2co7GPhUIz2Id\nSaikxlk7YU2u+B40473bndD49Fqy0kCu54YVbSPFH5NEhUbgtnxcY/R1xwKBgCSt\nLuPMAY5yDj1mCqKPN5k0pYLdHOIjbeGTxBbyLUTtYCoiX0j3uhFETFfRjrmohrIb\nvRlh2mjgwcFVLFpXuO0f8ALA/anE5QnBDbJprDPPBmRERNlr/K6mFASFrJht5OCj\nNukz5atb8oatQ611a+wEgy/jhsKBhOiPM8/GROVrAoGBALawMxSigdllZnTV487s\negQpX8CpiZv60QsPwmotRpcS70XTkJIoeeV2QCrhfNytaXEhLkXWC3z1bIytRKLY\nk2KVCPjXUuI+AfZ2iwyaeA9YUH1IB7jTfY/EP/ysVdvuT+M7hAeoliKrMOnXI3ck\nomSDuGsL32AeTJ5PBQLl1o9P\n-----END PRIVATE KEY-----\n",
+  "client_email": "makgatoisaac@parcelhubproject2.iam.gserviceaccount.com",
+  "client_id": "104991949641467843943",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/makgatoisaac%40parcelhubproject2.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
