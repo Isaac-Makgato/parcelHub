@@ -15,7 +15,7 @@ from google.cloud import bigquery
 # Load environment variables from servacc.env
 load_dotenv("servacc.env")
 
-# Hardcoded project and dataset
+
 PROJECT_ID = "parcelhubproject2"
 DATASET = "dw_Parcelhub"
 
