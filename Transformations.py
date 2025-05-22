@@ -2,6 +2,7 @@
 
 """
 Author: Isaac Makgato
+NB:The scripts were developed with some reference to resources from Google, Stack Overflow, and ChatGPT AI.
 Purpose:
     Executes SQL scripts to create star schema tables and analytical views
     in BigQuery for the ParcelHub data warehouse.

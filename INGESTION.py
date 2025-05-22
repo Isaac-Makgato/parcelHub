@@ -1,74 +1,89 @@
-# Transformations.py
-
 """
 Author: Isaac Makgato
-Purpose:
-    Executes SQL scripts to create star schema tables and analytical views
-    in BigQuery for the ParcelHub data warehouse.
+Purpose: This script ingests parcel, event, route, and hub data from CSV and JSON files
+         into Google BigQuery staging tables for the ParcelHub project.
+         It authenticates using a service account and supports specifying the processing date.
+      NB: To gain a better understanding of the approach, I conducted research 
+          using resources such as Google and Stack Overflow.
 """
 
-import os
 from dotenv import load_dotenv
-from google.oauth2 import service_account
+import argparse
+import pandas as pd
+import json
+import os
+from datetime import datetime
+from pathlib import Path
 from google.cloud import bigquery
+from google.oauth2 import service_account
 
-# Load environment variables from servacc.env
+# Load environment variables
 load_dotenv("servacc.env")
 
+SERVICE_ACCOUNT_PATH = os.getenv("SERVICE_ACCOUNT_PATH")
+BASE_DATA_DIR = os.getenv("BASE_DATA_DIR")
+
+if not SERVICE_ACCOUNT_PATH or not os.path.exists(SERVICE_ACCOUNT_PATH):
+    raise FileNotFoundError("Missing or invalid SERVICE_ACCOUNT_PATH in .env file.")
+
+if not BASE_DATA_DIR or not os.path.exists(BASE_DATA_DIR):
+    raise FileNotFoundError("Missing or invalid BASE_DATA_DIR in .env file.")
 
 PROJECT_ID = "parcelhubproject2"
-DATASET = "dw_Parcelhub"
-
-# Read environment variables
-SERVICE_ACCOUNT_PATH = os.getenv("SERVICE_ACCOUNT_PATH")
-SQL_SCRIPTS_DIR = os.getenv("SQL_SCRIPTS_DIR")
-
-
-# Validate required environment variables
-if not SERVICE_ACCOUNT_PATH or not os.path.exists(SERVICE_ACCOUNT_PATH):
-    raise FileNotFoundError("Missing or invalid SERVICE_ACCOUNT_PATH in servacc.env")
-
-if not SQL_SCRIPTS_DIR or not os.path.isdir(SQL_SCRIPTS_DIR):
-    raise FileNotFoundError("Missing or invalid SQL_SCRIPTS_DIR in servacc.env")
+DATASET = "Staging_Parcelhub"
 
 # Initialize BigQuery client
 credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_PATH)
 client = bigquery.Client(project=PROJECT_ID, credentials=credentials)
 
-# Ordered list of SQL files
-sql_files = [
-    "dim_hub.sql",
-    "dim_parcel.sql",
-    "dim_route.sql",
-    "fact_parcel_events.sql",
-    "vw_daily_route_performance.sql",
-    "vw_parcel_event_sequence.sql",
-]
-def run_ingestion(processing_date: str):
-    print(f"Ingesting data for {processing_date}")
+# === File loading functions ===
+def load_csv(path, table):
+    print(f"Loading CSV from {path} into {table}")
+    df = pd.read_csv(path)
+    client.load_table_from_dataframe(df, table).result()
+    print(f"Loaded {len(df)} rows into {table}")
 
-# Execute a SQL file
-def execute_sql_file(file_path):
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            query = f.read()
-            print(f"Executing: {file_path}...")
-            client.query(query).result()
-            print(f"Successfully executed: {file_path}\n")
-    except Exception as e:
-        print(f"Failed to execute {file_path}: {e}")
+def load_json(path, table):
+    print(f"Loading JSON from {path} into {table}")
+    with open(path, 'r') as f:
+        records = [json.loads(line.strip()) for line in f if line.strip()]
+    df = pd.DataFrame(records)
+    client.load_table_from_dataframe(df, table).result()
+    print(f"Loaded {len(df)} rows into {table}")
 
-# Main function
-def main():
-    print("Starting transformations in BigQuery...\n")
-    for file_name in sql_files:
-        full_path = os.path.join(SQL_SCRIPTS_DIR, file_name)
-        if os.path.exists(full_path):
-            execute_sql_file(full_path)
-        else:
-            print(f"File not found: {full_path}")
-    print("All scripts processed.")
+# === Path helper ===
+def get_file_paths(processing_date):
+    base = Path(BASE_DATA_DIR)
+    return {
+        "parcels": base / f"parcels_{processing_date.replace('-', '')}.csv",
+        "events":  base / f"events_{processing_date.replace('-', '')}.json",
+        "routes":  base / "routes.csv",
+        "hubs":    base / "hubs.csv"
+    }
 
-# Run script
+def get_table_names(processing_date):
+    date_tag = processing_date.replace("-", "")
+    return {
+        "parcels": f"{PROJECT_ID}.{DATASET}.stg_parcels_{date_tag}",
+        "events":  f"{PROJECT_ID}.{DATASET}.stg_events_{date_tag}",
+        "routes":  f"{PROJECT_ID}.{DATASET}.stg_routes",
+        "hubs":    f"{PROJECT_ID}.{DATASET}.stg_hubs"
+    }
+
+# === Main ingestion ===
+def run_ingestion(processing_date):
+    print(f"Processing date: {processing_date}")
+    paths = get_file_paths(processing_date)
+    tables = get_table_names(processing_date)
+
+    load_csv(paths["parcels"], tables["parcels"])
+    load_json(paths["events"], tables["events"])
+    load_csv(paths["routes"], tables["routes"])
+    load_csv(paths["hubs"], tables["hubs"])
+
+# Optional: if running this file directly (not importing)
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--processing_date", type=str, default=datetime.now().strftime("%Y-%m-%d"))
+    args = parser.parse_args()
+    run_ingestion(args.processing_date)

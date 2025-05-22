@@ -1,10 +1,8 @@
-
 """
 ParcelHub Data Pipeline Script
 
 Author: Isaac Makgato
-
-
+NB:The scripts were developed with some reference to resources from Google, Stack Overflow, and ChatGPT AI.
 Purpose:
 --------
 This script is the main entry point for running the ParcelHub data pipeline. It supports two main operations:
@@ -23,73 +21,92 @@ Run only ingestion:
 
 Run only transformation:
     python main.py --run transform
-
 """
 
-
 # Import required modules
+import argparse
+import logging
+from datetime import datetime, timedelta, timezone
+import os
+import re
 
-import argparse  # For parsing command-line arguments
-import logging   # For logging informational messages
-from datetime import datetime, timedelta  # For handling date and time
-
-# Import the custom ingestion and transformation functions from respective modules
+# Import the custom ingestion and transformation functions
 from INGESTION import run_ingestion
-from Transformations import run_transformations  
+from Transformations import run_transformations
+
 
 def parse_args():
-    """
-    Parse command-line arguments for controlling pipeline execution.
-    Returns:
-        argparse.Namespace: Parsed arguments with 'run' and 'processing_date'
-    """
     parser = argparse.ArgumentParser(description="ParcelHub Data Pipeline")
-    
-    # Argument to choose which part of the pipeline to run: ingestion, transformation, or both
     parser.add_argument(
         "--run",
         choices=["ingest", "transform", "all"],
         default="all",
         help="Which part of the pipeline to run"
     )
-    
-    # Argument to specify the date to process; defaults to None, which is handled later
     parser.add_argument(
         "--processing_date",
         type=str,
         default=None,
         help="Date to process (format: YYYY-MM-DD). Defaults to yesterday."
     )
-    
     return parser.parse_args()
 
+
+def get_all_dates_from_data_folder(data_folder_path):
+    """
+
+    Scans the specified folder for parcel CSV files and extracts all available dates
+    from filenames matching the pattern parcels_YYYYMMDD.csv.
+
+    Returns:
+        A sorted list of dates in 'YYYY-MM-DD' format.
+        NB:I used ChatGPT to write this function
+    """
+    pattern = re.compile(r"parcels_(\d{8})\.csv")
+    dates = []
+    for filename in os.listdir(data_folder_path):
+        match = pattern.match(filename)
+        if match:
+            date_str = match.group(1)
+            date_formatted = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:]}"
+            dates.append(date_formatted)
+    return sorted(dates)
+
+
 def main():
+     """
+    Entry point of the data pipeline.
+    Determines dates to process based on CLI arguments or available files,
+    and runs ingestion and/or transformation steps for each date.
     """
-    Main execution function for the data pipeline.
-    It runs ingestion and/or transformation based on command-line arguments.
-    """
-    args = parse_args()  # Parse the command-line arguments
-
-    # Set the processing date to the provided value or default to yesterday's date
-    processing_date = args.processing_date or (datetime.utcnow() - timedelta(days=1)).strftime('%Y-%m-%d')
-
-    # Configure the logging system
+    args = parse_args()
     logging.basicConfig(level=logging.INFO)
-    logging.info(f"Running pipeline with step: {args.run} and date: {processing_date}")
 
-    # Run the ingestion step if requested
-    if args.run in ["ingest", "all"]:
-        logging.info("Running ingestion step...")
-        run_ingestion(processing_date)
+    data_folder = "C:\\Users\\taelo\\parcelhub_project\\sample_data"  # Update if needed
+    # Determine processing dates
+    if args.processing_date:
+        processing_dates = [args.processing_date]
+    else:
+        processing_dates = get_all_dates_from_data_folder(data_folder)
+        if not processing_dates:
+            logging.error(f"No data files found in {data_folder}. Exiting.")
+            return
 
-    # Run the transformation step if requested
-    if args.run in ["transform", "all"]:
-        logging.info("Running transformation step...")
-        run_transformations(processing_date)
+    logging.info(f"Running pipeline with step: {args.run} for dates: {processing_dates}")
+    # Run the pipeline for each date
+    for processing_date in processing_dates:
+        logging.info(f"Processing date: {processing_date}")
 
-    # Log completion of the pipeline
+        if args.run in ["ingest", "all"]:
+            logging.info("Running ingestion step...")
+            run_ingestion(processing_date)
+
+        if args.run in ["transform", "all"]:
+            logging.info("Running transformation step...")
+            run_transformations(processing_date)
+
     logging.info("Pipeline finished.")
 
-# Entry point of the script
+
 if __name__ == "__main__":
     main()
