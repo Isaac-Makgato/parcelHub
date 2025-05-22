@@ -71,7 +71,7 @@ def get_table_names(processing_date):
     }
 
 # === Main ingestion ===
-def main(processing_date):
+def run_ingestion(processing_date):
     print(f"Processing date: {processing_date}")
     paths = get_file_paths(processing_date)
     tables = get_table_names(processing_date)
@@ -81,8 +81,9 @@ def main(processing_date):
     load_csv(paths["routes"], tables["routes"])
     load_csv(paths["hubs"], tables["hubs"])
 
+# Optional: if running this file directly (not importing)
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--processing_date", type=str, default=datetime.now().strftime("%Y-%m-%d"))
     args = parser.parse_args()
-    main(args.processing_date)
+    run_ingestion(args.processing_date)
