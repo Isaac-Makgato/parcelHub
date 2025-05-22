@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 from google.oauth2 import service_account
 from google.cloud import bigquery
 
-# Hardcoded values (as per your request)
+
 PROJECT_ID = "parcelhubproject2"
 DATASET = "dw_Parcelhub"
 
